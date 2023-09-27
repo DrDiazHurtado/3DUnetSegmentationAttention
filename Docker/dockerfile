@@ -1,0 +1,79 @@
+FROM ubuntu:18.04
+
+# Create a base docker container that can execute the network
+#
+# Example usage:
+#
+#       docker run --rm -it \
+#		       -v /home/user/project:/data \
+#		       unet-attention:v1.0 \
+#		       /opt/conda/bin/python3.8 /data/doit.py
+#
+#
+# Build the docker:
+#
+#	docker build --tag=unet-attention:v1.0 -f `pwd`/dockerfile `pwd`
+#
+
+# Add version from build arguments
+ARG version_arg=""
+ENV VERSION=$version_arg
+
+# Install the needed packages
+RUN apt-get update
+RUN apt-get install -y --fix-missing \
+  openssl* \
+  curl \
+  wget
+
+# Download and install python 3.7 with Conda 4.8.2
+RUN cd /opt
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-py38_4.9.2-Linux-x86_64.sh
+RUN sh Miniconda3-py38_4.9.2-Linux-x86_64.sh -b -p /opt/conda
+RUN rm Miniconda3-py38_4.9.2-Linux-x86_64.sh
+RUN cd /
+RUN . /opt/conda/etc/profile.d/conda.sh
+
+# Installing needed version for some packages
+RUN apt-get install -y libgomp1
+RUN /opt/conda/bin/conda init bash
+RUN /opt/conda/bin/conda create -n nicidp python=3.8
+
+# We install the needed requirements
+RUN /opt/conda/bin/conda install tensorflow=2.3.0
+RUN /opt/conda/bin/conda install numpy=1.18.5
+RUN /opt/conda/bin/conda install scipy=1.4.1
+RUN /opt/conda/bin/conda install scikit-learn=1.0.2
+
+# The default h5py package gives incompatibility problems with Keras, when loading weights, we need to downgrade
+RUN /opt/conda/bin/conda remove h5py
+
+# We install the packages choosing the specific version to avoid problems
+RUN /opt/conda/bin/pip install h5py==2.10.0
+RUN /opt/conda/bin/pip install numpy==1.18.5
+RUN /opt/conda/bin/pip install scipy==1.4.1
+RUN /opt/conda/bin/pip install scikit-learn==1.0.2
+RUN /opt/conda/bin/pip install tensorflow==2.3.0
+RUN /opt/conda/bin/pip install PyJWT
+RUN /opt/conda/bin/pip install click==6.7
+RUN /opt/conda/bin/pip install keras==2.8.0
+RUN /opt/conda/bin/pip install medpy==0.4.0
+RUN /opt/conda/bin/pip install nibabel==3.2.2
+RUN /opt/conda/bin/pip install pillow==9.1.0
+RUN /opt/conda/bin/pip install SimpleITK==2.1.1.2
+RUN /opt/conda/bin/pip install scikit-image==0.19.2
+RUN /opt/conda/bin/pip install torch==1.11.0
+RUN /opt/conda/bin/pip install torchio==0.18.76
+RUN /opt/conda/bin/pip install protobuf==3.20.1
+RUN /opt/conda/bin/pip install joblib
+RUN /opt/conda/bin/pip install matplotlib
+
+# Data directory for input and output
+RUN cd / && \
+  mkdir data && \
+	cd /data
+
+# Clean up a little bit the things
+RUN apt-get autoremove -y
+RUN apt-get clean
+RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
