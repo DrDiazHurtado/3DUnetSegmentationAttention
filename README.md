@@ -22,5 +22,5 @@ To run the docker container, where /home/user/project is where the project data 
 
 
 
+![image](https://github.com/DrDiazHurtado/3DUnetSegmentationAttention/assets/100340828/0362ec24-6a40-4d1f-ac27-6f8bc1fae515)
 
-![image](https://github.com/DrDiazHurtado/3DUnetSegmentationAttention/assets/100340828/8fe170de-6e80-4c50-8880-f502b434c0b2)
