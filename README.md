@@ -19,3 +19,8 @@ Also you can use the docker, that is the docker folder. To build the docker imag
 To run the docker container, where /home/user/project is where the project data lives in your computer:
 
     docker run --rm -it --shm-size=1024m -v ${PWD}/3DSegmentation:/data unet-attention:v1.0 /opt/conda/bin/python3.8 /data/doit.py
+
+
+
+
+![image](https://github.com/DrDiazHurtado/3DUnetSegmentationAttention/assets/100340828/8fe170de-6e80-4c50-8880-f502b434c0b2)
